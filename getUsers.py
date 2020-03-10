@@ -16,7 +16,7 @@ class UserDownloader:
         self._logger = logging.getLogger('SureDownloader_logger')
         self._logger.setLevel(logging.DEBUG)
         # Your path to log
-        fh = logging.FileHandler('./src/sure.log')
+        fh = logging.FileHandler('./src/icu.log')
         fh.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
@@ -34,23 +34,28 @@ class UserDownloader:
 
     def get_users(self):
         self.driver.get(self._path_to_post)
+        self._logger.info('instagram is loaded')
+        # We need to reveal all comments
+        # Click plus button until it exists
         while True:
             try:
                 self.driver.find_element_by_class_name('afkep').click()
                 time.sleep(self._delay)
+            #     Short delay to let button get ready
             except selenium.common.exceptions.NoSuchElementException:
                 break
-
+        self._logger.info('all comments revealed')
+        # Get all users in comments and post
         comments = self.driver.find_elements_by_class_name('ZIAjV')
-
+        # Make it set
         users_accounts = ['@' + comments[i].text for i in range(len(comments))]
-
         users_accounts = set(users_accounts)
+        # Get all user tags
         users_in_comments = self.driver.find_elements_by_class_name('notranslate')
-
+        # Make it set
         users_in_comments = [users_in_comments[i].text for i in range(len(users_in_comments))]
         users_in_comments = set(users_in_comments)
-
+        self._logger.info('all users found')
         users = users_accounts.union(users_in_comments)
         self.driver.close()
         return users
