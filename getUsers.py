@@ -1,5 +1,6 @@
 import logging
 import time
+from comment import Comment
 
 import selenium
 import selenium.webdriver as webdriver
@@ -32,7 +33,7 @@ class UserDownloader:
         self.driver = webdriver.Chrome(executable_path=self._path_to_chromedriver)
         self._logger.info('webdriver has been set up')
 
-    def get_users(self):
+    def get_users(self) -> [Comment]:
         self.driver.get(self._path_to_post)
         self._logger.info('instagram is loaded')
         # We need to reveal all comments
@@ -45,18 +46,15 @@ class UserDownloader:
             except selenium.common.exceptions.NoSuchElementException:
                 break
         self._logger.info('all comments revealed')
-        # Get all users in comments and post
-        comments = self.driver.find_elements_by_class_name('ZIAjV')
-        # Make it set
-        users_accounts = ['@' + comments[i].text for i in range(len(comments))]
-        users_accounts = set(users_accounts)
-        # Get all user tags
-        users_in_comments = self.driver.find_elements_by_class_name('notranslate')
-        # Make it set
-        users_in_comments = [users_in_comments[i].text for i in range(len(users_in_comments))]
-        users_in_comments = set(users_in_comments)
-        self._logger.info('all users found')
-        users = users_accounts.union(users_in_comments)
-        self.driver.close()
-        return users
 
+        comments = self.driver.find_elements_by_class_name('Mr508')
+
+        result = []
+        for comment in comments:
+            result.append([Comment(
+                text=comment.find_element_by_tag_name('span').text,
+                user=comment.find_element_by_class_name('ZIAjV').text,
+                date=comment.find_element_by_tag_name('time').get_attribute('datetime')
+            )])
+
+        return result
