@@ -8,10 +8,8 @@ import selenium.webdriver as webdriver
 
 class UserDownloader:
     def __init__(self,
-                 path_to_chromedriver,
-                 path_to_post):
+                 path_to_chromedriver):
         self._path_to_chromedriver = path_to_chromedriver
-        self._path_to_post = path_to_post
 
         # logger set up
         self._logger = logging.getLogger('SureDownloader_logger')
@@ -33,8 +31,8 @@ class UserDownloader:
         self.driver = webdriver.Chrome(executable_path=self._path_to_chromedriver)
         self._logger.info('webdriver has been set up')
 
-    def get_users(self) -> [Comment]:
-        self.driver.get(self._path_to_post)
+    def get_users(self, path_to_post) -> [Comment]:
+        self.driver.get(path_to_post)
         self._logger.info('instagram is loaded')
         # We need to reveal all comments
         # Click plus button until it exists
